@@ -225,3 +225,6 @@ project.lock.json
 #####
 
 */Properties/launchSettings.json*
+
+# ImGui settings
+imgui.ini
