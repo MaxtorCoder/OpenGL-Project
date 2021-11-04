@@ -2,6 +2,7 @@
 #define WINDOW_H__
 
 #include "common/Define.h"
+#include "entity/Camera.h"
 
 class Window
 {
@@ -19,6 +20,7 @@ private:
 
 private:
     GLFWwindow* m_window = nullptr;
+    Camera* m_camera = nullptr;
 };
 
 #endif // WINDOW_H__
