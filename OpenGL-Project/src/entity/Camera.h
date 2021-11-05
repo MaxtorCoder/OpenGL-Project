@@ -6,9 +6,11 @@
 class Camera : public Entity
 {
 public:
+    void UpdateProjectionMatrix();
     void SetProjectionMatrix(glm::mat4x4 const& matrix) { m_projectionMatrix = matrix; }
     glm::mat4x4& GetProjectionMatrix() { return m_projectionMatrix; }
 
+    void UpdateViewMatrix(glm::vec3 const& direction, glm::vec3 const& up);
     void SetViewMatrix(glm::mat4x4 const& matrix) { m_viewMatrix = matrix; }
     glm::mat4x4& GetViewMatrix() { return m_viewMatrix; }
 

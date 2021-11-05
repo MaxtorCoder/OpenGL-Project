@@ -24,8 +24,9 @@
     <ClCompile Include="src\common\Log.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
     <ClCompile Include="src\input\Input.cpp" />
+    <ClCompile Include="src\io\Texture.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
-    <ClCompile Include="src\renderer\Shader.cpp" />
+    <ClCompile Include="src\io\Shader.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
@@ -42,8 +43,9 @@
     <ClInclude Include="src\common\Log.h" />
     <ClInclude Include="src\entity\Entity.h" />
     <ClInclude Include="src\input\Input.h" />
+    <ClInclude Include="src\io\Texture.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
-    <ClInclude Include="src\renderer\Shader.h" />
+    <ClInclude Include="src\io\Shader.h" />
     <ClInclude Include="src\vendor\imgui\imconfig.h" />
     <ClInclude Include="src\vendor\imgui\imgui.h" />
     <ClInclude Include="src\vendor\imgui\imgui_impl_glfw.h" />

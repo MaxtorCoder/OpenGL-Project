@@ -3,6 +3,7 @@
 
 #include "common/Define.h"
 #include "entity/Camera.h"
+#include "Renderer.h"
 
 class Window
 {
@@ -20,7 +21,9 @@ private:
 
 public:
     GLFWwindow* m_window = nullptr;
-    Camera m_camera{};
+    Renderer m_renderer{};
+
+    Camera* m_camera = nullptr;
 };
 
 #endif // WINDOW_H__

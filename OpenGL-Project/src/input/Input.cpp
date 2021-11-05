@@ -3,6 +3,8 @@
 #include "renderer/Window.h"
 
 #include <iostream>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 void Input::HandleInput(Window* window)
 {
@@ -42,28 +44,21 @@ void Input::HandleInput(Window* window)
 	const glm::vec3 up = glm::cross(right, direction);
 
 	// Update position
+	Camera* camera = window->m_camera;
 	if (glfwGetKey(window->m_window, GLFW_KEY_W) == GLFW_PRESS)
-		m_position += direction * deltaTime * m_speed;
+		camera->UpdatePosition(camera->GetPosition() + direction * deltaTime * m_speed);
 	if (glfwGetKey(window->m_window, GLFW_KEY_S) == GLFW_PRESS)
-		m_position -= direction * deltaTime * m_speed;
+		camera->UpdatePosition(camera->GetPosition() - direction * deltaTime * m_speed);
 	if (glfwGetKey(window->m_window, GLFW_KEY_D) == GLFW_PRESS)
-		m_position += right * deltaTime * m_speed;
+		camera->UpdatePosition(camera->GetPosition() + right * deltaTime * m_speed);
 	if (glfwGetKey(window->m_window, GLFW_KEY_A) == GLFW_PRESS)
-		m_position -= right * deltaTime * m_speed;
+		camera->UpdatePosition(camera->GetPosition() - right * deltaTime * m_speed);
+
 	if (glfwGetKey(window->m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window->m_window, 1);
 
-	window->m_camera.SetProjectionMatrix(glm::perspective(
-		glm::radians(window->m_camera.GetFieldOfView()),
-		4.0f / 3.0f,
-		0.1f,
-		100.0f
-	));
-	window->m_camera.SetViewMatrix(glm::lookAt(
-		m_position,
-		m_position + direction,
-		up
-	));
+	camera->UpdateProjectionMatrix();
+	camera->UpdateViewMatrix(direction, up);
 
 	lastTime = currentTime;
 }
