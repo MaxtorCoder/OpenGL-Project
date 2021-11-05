@@ -18,9 +18,9 @@ private:
     void InitializeImGui();
     void DrawImGui();
 
-private:
+public:
     GLFWwindow* m_window = nullptr;
-    Camera* m_camera = nullptr;
+    Camera m_camera{};
 };
 
 #endif // WINDOW_H__

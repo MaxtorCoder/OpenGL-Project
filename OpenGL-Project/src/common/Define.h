@@ -9,6 +9,6 @@
 
 #include "Log.h"
 
-#define PROJECT_DIR(file) "E:/Programming Projects/Misc/C++/OpenGL-Project/OpenGL-Project/src/" file
+#define PROJECT_DIR(file) "E:/Programming Projects/Misc/C++/OpenGL-Project/OpenGL-Project/" file
 
 #endif // DEFINE_H__

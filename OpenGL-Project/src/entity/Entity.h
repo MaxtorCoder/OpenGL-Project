@@ -2,7 +2,7 @@
 #define ENTITY_H__
 
 #include <glm/mat4x4.hpp>
-#include "window/Shader.h"
+#include "renderer/Shader.h"
 
 class Entity
 {
