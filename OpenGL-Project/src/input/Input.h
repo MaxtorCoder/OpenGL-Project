@@ -12,9 +12,12 @@ public:
         return instance;
     }
 
-    void HandleInput(Window* window);
+    Input();
+
+    void HandleInput(const Window* window);
 
 private:
+    double m_lastTime = 0.0f;
 
     float m_horizontalAngle = 3.14f;
     float m_verticalAngle = 0.0f;

@@ -11,16 +11,19 @@ public:
     Entity();
     ~Entity();
 
-    void UpdatePosition(glm::vec3 const& newPosition);
+    void LoadModel(std::string const& filename);
 
-    glm::vec3 const& GetPosition() const { return m_position; }
-    glm::mat4x4 const& GetWorldMatrix() const { return m_worldMatrix; }
+    void SetPosition(const glm::vec3& position) { m_worldMatrix[3] = glm::vec4(position, 1.0f); }
+    glm::vec3 GetPosition() const { return m_worldMatrix[3]; }
+
+    const glm::mat4x4& GetWorldMatrix() const { return m_worldMatrix; }
+
+    Model* GetModel() const { return m_model; }
 
 private:
-    glm::vec3 m_position = glm::vec3(0, 0, 5);
-    glm::mat4x4 m_worldMatrix {};
+    glm::mat4x4 m_worldMatrix{};
 
-    Model m_model{};
+    Model* m_model = nullptr;
 };
 
 #endif // ENTITY_H__

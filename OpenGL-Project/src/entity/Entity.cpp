@@ -1,10 +1,17 @@
 ﻿#include "Entity.h"
 
-Entity::Entity() = default;
-Entity::~Entity() = default;
-
-void Entity::UpdatePosition(glm::vec3 const& newPosition)
+Entity::Entity()
 {
-    m_position = newPosition;
+    m_worldMatrix = glm::mat4x4(1.0f);
+}
+
+Entity::~Entity()
+{
+    delete m_model;
+}
+
+void Entity::LoadModel(std::string const& filename)
+{
+    m_model = Model::Load(filename);
 }
 

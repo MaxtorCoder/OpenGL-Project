@@ -4,7 +4,7 @@
 #include <sstream>
 #include <fstream>
 
-Shader::Shader() : m_shaderProgramId(0) {}
+Shader::Shader() = default;
 Shader::~Shader()
 {
     if (m_shaderProgramId != GL_INVALID_VALUE)
@@ -41,12 +41,27 @@ bool Shader::LoadShader(std::string const& vertexSource, std::string const& frag
 
     m_shaderProgramId = success ? programId : GL_INVALID_VALUE;
 
+    m_viewMatrixId = GetUniformLocation(VIEW_MATRIX);
+    m_projectionMatrixId = GetUniformLocation(PROJECTION_MATRIX);
+    m_modelMatrixId = GetUniformLocation(MODEL_MATRIX);
+
     return success;
 }
 
 void Shader::Bind() const
 {
     glUseProgram(m_shaderProgramId);
+}
+
+void Shader::SetCameraMatrix(const float* projectionMatrix, const float* viewMatrix)
+{
+    glProgramUniformMatrix4fv(m_shaderProgramId, m_projectionMatrixId, 1, GL_FALSE, projectionMatrix);
+    glProgramUniformMatrix4fv(m_shaderProgramId, m_viewMatrixId, 1, GL_FALSE, viewMatrix);
+}
+
+void Shader::SetModelMatrix(const float* modelMatrix)
+{
+    glProgramUniformMatrix4fv(m_shaderProgramId, m_modelMatrixId, 1, GL_FALSE, modelMatrix);
 }
 
 int32_t Shader::GetUniformLocation(std::string const& handle) const
@@ -56,7 +71,7 @@ int32_t Shader::GetUniformLocation(std::string const& handle) const
 
 bool Shader::Compile(std::string const& source, const int shaderType, uint32_t& shaderId)
 {
-    uint32_t shader = glCreateShader(shaderType);
+    const uint32_t shader = glCreateShader(shaderType);
 
     char const* sourcePointer = source.c_str();
     glShaderSource(shader, 1, &sourcePointer, nullptr);
@@ -68,7 +83,7 @@ bool Shader::Compile(std::string const& source, const int shaderType, uint32_t& 
     if (!compileResult)
     {
         char errorLog[512];
-        glGetShaderInfoLog(shader, 512, NULL, errorLog);
+        glGetShaderInfoLog(shader, 512, nullptr, errorLog);
         Log::Print("Failed to compile shader: %s", errorLog);
         glDeleteShader(shader);
         return false;
@@ -91,7 +106,7 @@ bool Shader::Create(const uint32_t vertexId, const uint32_t fragmentId, uint32_t
     if (!linkResult)
     {
         char errorLog[512];
-        glGetProgramInfoLog(programId, 512, NULL, errorLog);
+        glGetProgramInfoLog(programId, 512, nullptr, errorLog);
         Log::Print("Failed to create shader: %s", errorLog);
         glDeleteProgram(programId);
         return false;

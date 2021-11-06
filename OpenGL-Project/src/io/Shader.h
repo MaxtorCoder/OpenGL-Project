@@ -9,9 +9,16 @@ public:
     Shader();
     ~Shader();
 
+    static constexpr char VIEW_MATRIX[] = "u_viewMatrix";
+    static constexpr char PROJECTION_MATRIX[] = "u_projectionMatrix";
+    static constexpr char MODEL_MATRIX[] = "u_modelMatrix";
+
 public:
     bool LoadShader(std::string const& vertexSource, std::string const& fragmentSource);
     void Bind() const;
+
+    void SetCameraMatrix(const float* projectionMatrix, const float* viewMatrix);
+    void SetModelMatrix(const float* modelMatrix);
 
     int32_t GetUniformLocation(std::string const& handle) const;
 
@@ -22,7 +29,11 @@ private:
     std::string LoadFile(std::string const& filePath);
 
 private:
-    uint32_t m_shaderProgramId;
+    uint32_t m_shaderProgramId = 0;
+
+    int32_t m_projectionMatrixId = 0;
+    int32_t m_viewMatrixId = 0;
+    int32_t m_modelMatrixId = 0;
 };
 
 #endif // SHADER_H__
