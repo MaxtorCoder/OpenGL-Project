@@ -2,6 +2,7 @@
 #define SHADER_H__
 
 #include <string>
+#include <glm/glm.hpp>
 
 class Shader
 {
@@ -17,16 +18,18 @@ public:
     bool LoadShader(std::string const& vertexSource, std::string const& fragmentSource);
     void Bind() const;
 
-    void SetCameraMatrix(const float* projectionMatrix, const float* viewMatrix);
-    void SetModelMatrix(const float* modelMatrix);
+    void SetCameraMatrix(glm::mat4 const& projectionMatrix, glm::mat4 const& viewMatrix) const;
+    void SetModelMatrix(glm::mat4 const& modelMatrix) const;
 
-    int32_t GetUniformLocation(std::string const& handle) const;
+    [[nodiscard]] int32_t GetUniformLocation(std::string const& handle) const;
+    void SetUniformLocation(int32_t const& location, glm::mat4 const& matrix) const;
+    void SetVector3Location(int32_t const& location, glm::vec3 const& vec3) const;
 
 private:
-    bool Compile(std::string const& source, const int shaderType, uint32_t& shaderId);
-    bool Create(const uint32_t vertexId, const uint32_t fragmentId, uint32_t& programId);
+    static bool Compile(std::string const& source, const int shaderType, uint32_t& shaderId);
+    static bool Create(const uint32_t vertexId, const uint32_t fragmentId, uint32_t& programId);
 
-    std::string LoadFile(std::string const& filePath);
+    static std::string LoadFile(std::string const& filePath);
 
 private:
     uint32_t m_shaderProgramId = 0;

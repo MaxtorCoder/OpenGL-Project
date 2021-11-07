@@ -1,5 +1,6 @@
 #include "Window.h"
 
+#include <array>
 #include <stdexcept>
 #include <iostream>
 #include <glm/gtc/matrix_transform.hpp>
@@ -41,7 +42,7 @@ void Window::Initialize()
     m_renderer->Initialize();
 
     // Set initial camera position
-    m_renderer->m_camera->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+    m_renderer->m_camera->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 void Window::RunWindowLoop()
@@ -62,8 +63,29 @@ void Window::RunWindowLoop()
     glfwPollEvents();
     glfwSetCursorPos(m_window, 1600.0 / 2, 900.0 / 2);
 
-    Entity* entity = new Entity();
-    entity->LoadModel(PROJECT_DIR("res/model/model.bin"));
+    Shader* shader = new Shader();
+    if (!shader->LoadShader(PROJECT_DIR("res/shaders/vertex.vert"), PROJECT_DIR("res/shaders/fragment.frag")))
+        return;
+
+    Texture* texture = new Texture();
+    if (!texture->Load(PROJECT_DIR("res/model/Cube_UV_Texture.png"), TextureType::PNG))
+        return;
+
+    const uint32_t textureId = texture->Bind();
+
+    std::array<Entity*, 5> entities{};
+    for (int32_t i = 0; i < 5; ++i)
+    {
+        entities[i] = new Entity();
+        entities[i]->LoadModel(PROJECT_DIR("res/model/CerealBox.obj"));
+        entities[i]->SetPosition({ i * 2.5f, 0, 0 });
+
+        entities[i]->GetModel()->m_shader = shader;
+        entities[i]->GetModel()->m_texture = texture;
+        entities[i]->GetModel()->m_textureId = textureId;
+
+        m_renderer->EnqueueDrawEntity(entities[i]);
+    }
 
     while (!glfwWindowShouldClose(m_window))
     {
@@ -76,8 +98,7 @@ void Window::RunWindowLoop()
         glClear(GL_DEPTH_BUFFER_BIT);
 
         // Update the renderer to dequeue any enqueued draw operations
-        m_renderer->Update(deltaTime);
-        m_renderer->Draw(entity);
+        m_renderer->Update(static_cast<float>(deltaTime));
 
         // Update the Input for camera movement :eyes:
         Input::GetInstance().HandleInput(this);
@@ -89,10 +110,14 @@ void Window::RunWindowLoop()
         glfwPollEvents();
     }
 
-    delete entity;
+    for (Entity const* entity : entities)
+        delete entity;
+
+    delete shader;
+    delete texture;
 }
 
-void Window::InitializeImGui()
+void Window::InitializeImGui() const
 {
     if (!m_window)
         throw std::runtime_error("Something went wrong while initializing imgui, m_window is nullptr");
@@ -104,7 +129,7 @@ void Window::InitializeImGui()
     ImGui::StyleColorsDark();
 }
 
-void Window::DrawImGui()
+void Window::DrawImGui() const
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
@@ -120,11 +145,19 @@ void Window::DrawImGui()
         ImGui::End();
     }
 
+    if (ImGui::Begin("Controls"))
+    {
+        ImGui::InputFloat("Movement Speed", &Input::GetInstance().m_speed);
+        ImGui::InputFloat("Mouse Speed", &Input::GetInstance().m_mouseSpeed);
+
+        ImGui::End();
+    }
+
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void Window::Shutdown()
+void Window::Shutdown() const
 {
     // Destroy the ImGui context
     ImGui_ImplOpenGL3_Shutdown();

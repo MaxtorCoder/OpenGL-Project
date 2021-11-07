@@ -1,47 +1,73 @@
 ﻿#include "Texture.h"
 
 #include <fstream>
+#include <array>
+#include <optional>
+#include <png.h>
 
 #include "common/Define.h"
+#include "io/png/PngFile.h"
 
-Texture::Texture(): m_header({}), m_dataPosition(0), m_width(0), m_height(0), m_imageSize(0), m_data(nullptr) {}
+Texture::Texture(): m_currentType(), m_width(0), m_height(0), m_colorType(0), m_data(nullptr) {}
 Texture::~Texture() = default;
 
-bool Texture::Load(std::string const& path)
+bool Texture::Load(std::string const& path, TextureType const& textureType)
 {
-    FILE* file = nullptr;
-    fopen_s(&file, path.c_str(), "rb");
-    if (!file)
+    m_currentType = textureType;
+
+    switch (textureType)
     {
-        Log::Print("Failed to load texture: %s", path.c_str());
-        return false;
+        case TextureType::PNG:
+        {
+            const std::optional<PngInfo> pngInfo = PngFile::Load(path);
+            if (!pngInfo)
+                return false;
+
+            m_width = pngInfo->m_width;
+            m_height = pngInfo->m_height;
+            m_colorType = pngInfo->m_colorType;
+            m_data = pngInfo->m_data;
+            break;
+        }
+        case TextureType::BMP:
+        {
+            FILE* file = nullptr;
+            fopen_s(&file, path.c_str(), "rb");
+            if (!file)
+            {
+                Log::Print("Failed to load texture: %s", path.c_str());
+                return false;
+            }
+
+            std::array<uint8_t, 56> header{};
+            if (fread(header.data(), 1, 54, file) != 54)
+            {
+                Log::Print("Not a correct bmp file: %s", path.c_str());
+                return false;
+            }
+
+            if (header[0] != 'B' || header[1] != 'M')
+            {
+                Log::Print("Invalid texture file: %s", path.c_str());
+                return false;
+            }
+
+            m_width = *reinterpret_cast<uint32_t*>(&header[0x12]);
+            m_height = *reinterpret_cast<uint32_t*>(&header[0x16]);
+            uint32_t imageSize = *reinterpret_cast<uint32_t*>(&header[0x22]);
+
+            if (!imageSize)
+                imageSize = m_width * m_height * 3;   ///< 3 : one byte for each Red, Green and Blue component
+
+            m_data = new uint8_t[imageSize];
+            fread(m_data, 1, imageSize, file);
+            fclose(file);
+            break;
+        }
+        case TextureType::BLP:
+        case TextureType::DDS:
+            return false;
     }
-
-    if (fread(m_header.data(), 1, 54, file) != 54)
-    {
-        Log::Print("Not a correct bmp file: %s", path.c_str());
-        return false;
-    }
-
-    if (m_header[0] != 'B' || m_header[1] != 'M')
-    {
-        Log::Print("Invalid texture file: %s", path.c_str());
-        return false;
-    }
-
-    m_dataPosition  = *reinterpret_cast<uint32_t*>(&m_header[0x0A]);
-    m_width         = *reinterpret_cast<int32_t*>(&m_header[0x12]);
-    m_height        = *reinterpret_cast<int32_t*>(&m_header[0x16]);
-    m_imageSize     = *reinterpret_cast<uint32_t*>(&m_header[0x22]);
-
-    if (!m_imageSize)
-        m_imageSize = m_width * m_height * 3;   ///< 3 : one byte for each Red, Green and Blue component
-    if (!m_dataPosition)
-        m_dataPosition = 54;                    ///< End of header
-
-    m_data = new uint8_t[m_imageSize];
-    fread(m_data, 1, m_imageSize, file);
-    fclose(file);
 
     return true;
 }
@@ -53,7 +79,26 @@ uint32_t Texture::Bind() const
 
     glBindTexture(GL_TEXTURE_2D, textureId);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, m_data);
+    if (m_currentType == TextureType::PNG)
+    {
+        uint32_t alpha = GL_BGR;
+        switch (m_colorType)
+        {
+            case PNG_COLOR_TYPE_RGBA:
+                alpha = GL_RGBA;
+                break;
+            case PNG_COLOR_TYPE_RGB:
+                alpha = GL_RGB;
+                break;
+            default:
+                break;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, alpha, GL_UNSIGNED_BYTE, m_data);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    }
+    else
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_BGR, GL_UNSIGNED_BYTE, m_data);
 
     delete[] m_data;
 

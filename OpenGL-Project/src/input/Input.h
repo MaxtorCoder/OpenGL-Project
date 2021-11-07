@@ -16,14 +16,15 @@ public:
 
     void HandleInput(const Window* window);
 
+public:
+    float m_speed = 3.0f;
+    float m_mouseSpeed = 0.005f;
+
 private:
     double m_lastTime = 0.0f;
 
     float m_horizontalAngle = 3.14f;
     float m_verticalAngle = 0.0f;
-
-    float m_speed = 3.0f;
-    float m_mouseSpeed = 0.005f;
 };
 
 #endif // INPUT_H__

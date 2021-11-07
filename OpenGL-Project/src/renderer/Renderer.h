@@ -29,6 +29,7 @@ private:
 
     uint32_t m_vertexBufferId;
     uint32_t m_uvBufferId;
+    uint32_t m_normalBufferId;
     uint32_t m_vertexArrayId;
 
 };

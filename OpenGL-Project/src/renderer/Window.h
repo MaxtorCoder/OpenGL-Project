@@ -12,14 +12,14 @@ public:
 
     void Initialize();
     void RunWindowLoop();
-    void Shutdown();
+    void Shutdown() const;
 
     Renderer const* GetRenderer() const { return m_renderer; }
     GLFWwindow* GetWindow() const { return m_window; }
 
 private:
-    void InitializeImGui();
-    void DrawImGui();
+    void InitializeImGui() const;
+    void DrawImGui() const;
 
 private:
     GLFWwindow* m_window = nullptr;

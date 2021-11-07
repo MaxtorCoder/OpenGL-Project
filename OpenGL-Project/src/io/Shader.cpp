@@ -4,6 +4,8 @@
 #include <sstream>
 #include <fstream>
 
+#include <glm/gtc/type_ptr.hpp>
+
 Shader::Shader() = default;
 Shader::~Shader()
 {
@@ -53,20 +55,30 @@ void Shader::Bind() const
     glUseProgram(m_shaderProgramId);
 }
 
-void Shader::SetCameraMatrix(const float* projectionMatrix, const float* viewMatrix)
+void Shader::SetCameraMatrix(glm::mat4 const& projectionMatrix, glm::mat4 const& viewMatrix) const
 {
-    glProgramUniformMatrix4fv(m_shaderProgramId, m_projectionMatrixId, 1, GL_FALSE, projectionMatrix);
-    glProgramUniformMatrix4fv(m_shaderProgramId, m_viewMatrixId, 1, GL_FALSE, viewMatrix);
+    SetUniformLocation(m_projectionMatrixId, projectionMatrix);
+    SetUniformLocation(m_viewMatrixId, viewMatrix);
 }
 
-void Shader::SetModelMatrix(const float* modelMatrix)
+void Shader::SetModelMatrix(glm::mat4 const& modelMatrix) const
 {
-    glProgramUniformMatrix4fv(m_shaderProgramId, m_modelMatrixId, 1, GL_FALSE, modelMatrix);
+    SetUniformLocation(m_modelMatrixId, modelMatrix);
 }
 
 int32_t Shader::GetUniformLocation(std::string const& handle) const
 {
     return glGetUniformLocation(m_shaderProgramId, handle.c_str());
+}
+
+void Shader::SetUniformLocation(int32_t const& location, glm::mat4 const& matrix) const
+{
+    glProgramUniformMatrix4fv(m_shaderProgramId, location, 1, GL_FALSE, glm::value_ptr(matrix));
+}
+
+void Shader::SetVector3Location(int32_t const& location, glm::vec3 const& vec3) const
+{
+    glUniform3f(location, vec3.x, vec3.y, vec3.z);
 }
 
 bool Shader::Compile(std::string const& source, const int shaderType, uint32_t& shaderId)

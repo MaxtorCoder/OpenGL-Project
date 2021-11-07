@@ -24,6 +24,7 @@
     <ClCompile Include="src\common\Log.cpp" />
     <ClCompile Include="src\entity\Entity.cpp" />
     <ClCompile Include="src\input\Input.cpp" />
+    <ClCompile Include="src\io\png\PngFile.cpp" />
     <ClCompile Include="src\io\Texture.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\io\Shader.cpp" />
@@ -43,6 +44,7 @@
     <ClInclude Include="src\common\Log.h" />
     <ClInclude Include="src\entity\Entity.h" />
     <ClInclude Include="src\input\Input.h" />
+    <ClInclude Include="src\io\png\PngFile.h" />
     <ClInclude Include="src\io\Texture.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\io\Shader.h" />
@@ -160,15 +162,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC;</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLEW_STATIC;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)deps\GLFW\include\;$(SolutionDir)deps\GLEW\include\;$(SolutionDir)$(ProjectName)\src\vendor\;$(SolutionDir)$(ProjectName)\src\;$(SolutionDir)deps\glm\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)deps\GLFW\include\;$(SolutionDir)deps\GLEW\include\;$(SolutionDir)$(ProjectName)\src\vendor\;$(SolutionDir)$(ProjectName)\src\;$(SolutionDir)deps\glm\include\;$(SolutionDir)deps\libpng\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)deps\GLFW\lib-vc2019\;$(SolutionDir)deps\GLEW\lib-vc2019\;$(SolutionDir)deps\glm\lib-vc2019\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)deps\GLFW\lib-vc2019\;$(SolutionDir)deps\GLEW\lib-vc2019\;$(SolutionDir)deps\glm\lib-vc2019\;$(SolutionDir)deps\libpng\lib-vs2022\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32s.lib;libpng16d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
